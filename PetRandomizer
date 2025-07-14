@@ -1,24 +1,137 @@
--- Full Egg Randomizer GUI + ESP + Pet Spawn + Egg Crack FX
+-- 📦 SERVICES
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
 
-local Players = game:GetService("Players") local ReplicatedStorage = game:GetService("ReplicatedStorage") local Workspace = game:GetService("Workspace") local player = Players.LocalPlayer local playerGui = player:WaitForChild("PlayerGui")
+-- 📌 REFERENCES
+local player = Players.LocalPlayer
+local gui = player:WaitForChild("PlayerGui")
+local eggPart = Workspace:WaitForChild("Egg")
 
--- Egg part reference local eggPart = Workspace:WaitForChild("Egg")
+-- 🧱 Billboard ESP
+local billboard = Instance.new("BillboardGui", eggPart)
+billboard.Name = "EggESP"
+billboard.Adornee = eggPart
+billboard.Size = UDim2.new(0, 200, 0, 50)
+billboard.StudsOffset = Vector3.new(0, 3, 0)
+billboard.AlwaysOnTop = true
+billboard.Enabled = false
 
--- Billboard for ESP local billboard = Instance.new("BillboardGui") billboard.Size = UDim2.new(0, 200, 0, 50) billboard.StudsOffset = Vector3.new(0, 3, 0) billboard.Adornee = eggPart billboard.AlwaysOnTop = true billboard.Enabled = false billboard.Name = "EggESP" billboard.Parent = eggPart
+local label = Instance.new("TextLabel", billboard)
+label.Size = UDim2.new(1, 0, 1, 0)
+label.BackgroundTransparency = 1
+label.TextColor3 = Color3.new(1, 1, 1)
+label.TextScaled = true
+label.Font = Enum.Font.Arcade
+label.Text = ""
 
-local eggLabel = Instance.new("TextLabel") eggLabel.Size = UDim2.new(1, 0, 1, 0) eggLabel.BackgroundTransparency = 1 eggLabel.TextColor3 = Color3.new(1, 1, 1) eggLabel.Font = Enum.Font.Arcade eggLabel.TextScaled = true eggLabel.Text = "" eggLabel.Parent = billboard
+-- 🖥️ GUI
+local screen = Instance.new("ScreenGui", gui)
+screen.Name = "EggRandomizerGUI"
 
--- GUI setup local gui = Instance.new("ScreenGui", playerGui) local mainFrame = Instance.new("Frame", gui) mainFrame.Size = UDim2.new(0, 300, 0, 120) mainFrame.Position = UDim2.new(0, 60, 0, 60) mainFrame.BackgroundColor3 = Color3.fromRGB(120, 80, 40) mainFrame.Active = true mainFrame.Draggable = true
+local frame = Instance.new("Frame", screen)
+frame.Size = UDim2.new(0, 300, 0, 120)
+frame.Position = UDim2.new(0, 60, 0, 60)
+frame.BackgroundColor3 = Color3.fromRGB(120, 80, 40)
+frame.Draggable = true
+frame.Active = true
 
-local header = Instance.new("Frame", mainFrame) header.Size = UDim2.new(1, 0, 0, 30) header.BackgroundColor3 = Color3.fromRGB(120, 170, 80)
+local header = Instance.new("Frame", frame)
+header.Size = UDim2.new(1, 0, 0, 30)
+header.BackgroundColor3 = Color3.fromRGB(120, 170, 80)
 
-local title = Instance.new("TextLabel", header) title.Size = UDim2.new(1, -40, 1, 0) title.Position = UDim2.new(0, 10, 0, 0) title.Text = "🐣 Randomizer" title.Font = Enum.Font.Arcade title.TextSize = 18 title.BackgroundTransparency = 1 title.TextXAlignment = Enum.TextXAlignment.Left title.TextColor3 = Color3.new(1, 1, 1)
+local title = Instance.new("TextLabel", header)
+title.Size = UDim2.new(1, -40, 1, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.Text = "🐣 Randomizer"
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Font = Enum.Font.Arcade
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextSize = 18
+title.BackgroundTransparency = 1
 
-local minimize = Instance.new("TextButton", header) minimize.Size = UDim2.new(0, 30, 0, 25) minimize.Position = UDim2.new(1, -35, 0, 2) minimize.Text = "-" minimize.BackgroundColor3 = Color3.fromRGB(210, 60, 60) minimize.Font = Enum.Font.Arcade minimize.TextColor3 = Color3.new(1, 1, 1) minimize.TextSize = 18
+-- 🧲 MINIMIZE
+local minimize = Instance.new("TextButton", header)
+minimize.Text = "-"
+minimize.Size = UDim2.new(0, 30, 0, 25)
+minimize.Position = UDim2.new(1, -35, 0, 2)
+minimize.Font = Enum.Font.Arcade
+minimize.BackgroundColor3 = Color3.fromRGB(210, 60, 60)
+minimize.TextColor3 = Color3.new(1, 1, 1)
 
-local miniFrame = Instance.new("TextButton", gui) miniFrame.Size = UDim2.new(0, 150, 0, 30) miniFrame.Position = mainFrame.Position miniFrame.BackgroundColor3 = Color3.fromRGB(120, 170, 80) miniFrame.Text = "EggRandomizer" miniFrame.TextColor3 = Color3.new(1, 1, 1) miniFrame.Font = Enum.Font.Arcade miniFrame.TextSize = 16 miniFrame.Visible = false
+local miniFrame = Instance.new("TextButton", screen)
+miniFrame.Size = UDim2.new(0, 150, 0, 30)
+miniFrame.Position = frame.Position
+miniFrame.Text = "EggRandomizer"
+miniFrame.Visible = false
+miniFrame.BackgroundColor3 = Color3.fromRGB(120, 170, 80)
+miniFrame.Font = Enum.Font.Arcade
+miniFrame.TextColor3 = Color3.new(1, 1, 1)
+miniFrame.TextSize = 16
 
-local minimized = false minimize.MouseButton1Click:Connect(function() minimized = not minimized mainFrame.Visible = not minimized miniFrame.Visible = minimized end)
+minimize.MouseButton1Click:Connect(function()
+	frame.Visible = false
+	miniFrame.Visible = true
+end)
 
-miniFrame.MouseButton1Click:Connect(function() minimized = false mainFrame
+miniFrame.MouseButton1Click:Connect(function()
+	frame.Visible = true
+	miniFrame.Visible = false
+end)
 
+-- 🔄 ESP TOGGLE
+local esp = Instance.new("TextButton", frame)
+esp.Text = "[A] ESP Egg: OFF"
+esp.Size = UDim2.new(1, -20, 0, 40)
+esp.Position = UDim2.new(0, 10, 0, 35)
+esp.Font = Enum.Font.Arcade
+esp.TextColor3 = Color3.new(1, 1, 1)
+esp.BackgroundColor3 = Color3.fromRGB(210, 60, 60)
+
+local espOn = false
+esp.MouseButton1Click:Connect(function()
+	espOn = not espOn
+	label.Text = ""
+	billboard.Enabled = espOn
+	esp.Text = "[A] ESP Egg: " .. (espOn and "ON" or "OFF")
+end)
+
+-- 🎲 PETS
+local pets = {"Tarantula Hawk", "Killer Wasp", "Hornet Queen", "Red Bee", "Sting Mantis"}
+
+-- 🎮 REROLL
+local reroll = Instance.new("TextButton", frame)
+reroll.Text = "[B] Reroll Pet"
+reroll.Size = UDim2.new(1, -20, 0, 40)
+reroll.Position = UDim2.new(0, 10, 0, 80)
+reroll.Font = Enum.Font.Arcade
+reroll.TextColor3 = Color3.new(1, 1, 1)
+reroll.BackgroundColor3 = Color3.fromRGB(100, 150, 255)
+
+reroll.MouseButton1Click:Connect(function()
+	local petName = pets[math.random(1, #pets)]
+	if espOn then
+		label.Text = "Anti Bee Egg | " .. petName
+	end
+
+	-- Crack FX
+	local crack = Instance.new("ParticleEmitter")
+	crack.Texture = "rbxassetid://243660364"
+	crack.Lifetime = NumberRange.new(0.5)
+	crack.Speed = NumberRange.new(1)
+	crack.Rate = 100
+	crack.Parent = eggPart
+
+	task.delay(0.6, function()
+		crack:Destroy()
+
+		local models = ReplicatedStorage:FindFirstChild("PetModels")
+		if models and models:FindFirstChild(petName) then
+			local pet = models[petName]:Clone()
+			pet:SetPrimaryPartCFrame(eggPart.CFrame + Vector3.new(0, 2, 0))
+			pet.Parent = Workspace
+		else
+			warn("Missing pet model: " .. petName)
+		end
+	end)
+end)
