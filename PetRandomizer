@@ -1,55 +1,100 @@
+-- Stardew-style Grow A Garden-inspired Pet Randomizer GUI
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
-local gui = player:WaitForChild("PlayerGui")
+local playerGui = player:WaitForChild("PlayerGui")
 
--- 🥚 Define eggs
-local eggTypes = {
-    Common = {"Golden Lab","Dog","Bunny"},
-    Uncommon = {"Black Bunny","Chicken","Cat","Deer"},
-    Rare = {"Orange Tabby","Spotted Deer","Pig","Rooster","Monkey"},
-    Legendary = {"Cow","Silver Monkey","Sea Otter","Turtle","Polar Bear"},
-    Bug = {"Snail","Giant Ant","Caterpillar","Praying Mantis","Dragonfly"},
-    Mythical = {"Grey Mouse","Brown Mouse","Squirrel","Red Giant Ant","Red Fox"},
-    Primal = {"Parasaurolophus","Iguanodon","Pachycephalosaurus","Dilophosaurus","Ankylosaurus","Spinosaurus"},
-    Dinosaur = {"T-Rex","Raptor"} -- example
-}
+-- Theme colors
+local green = Color3.fromRGB(120, 170, 80)
+local red = Color3.fromRGB(210, 60, 60)
+local blue = Color3.fromRGB(100, 150, 255)
+local brown = Color3.fromRGB(120, 80, 40)
 
--- Map some egg types to images
-local eggImages = {
-    Common = "rbxassetid://12345",
-    Uncommon = "rbxassetid://12346",
-    Bug = "rbxassetid://12347",
-    Mythical = "rbxassetid://12348",
-    Primal = "rbxassetid://12349",
-    Dinosaur = "rbxassetid://12350",
-    Legendary = "rbxassetid://12351",
-    Rare = "rbxassetid://12352"
-}
+-- Create screen GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "PetRandomizerGUI"
+gui.ResetOnSpawn = false
+gui.Parent = playerGui
 
--- Create UI
-local screen = Instance.new("ScreenGui", gui)
-screen.Name = "PetRandomizerGui"
+-- Main frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 120)
+frame.Position = UDim2.new(0, 50, 0, 50)
+frame.BackgroundColor3 = brown
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
 
--- ESP toggle
-local espBtn = Instance.new("TextButton", screen)
-espBtn.Name, espBtn.Size, espBtn.Position, espBtn.Text = "EspToggle", UDim2.new(0,100,0,50), UDim2.new(0,0,0,0), "ESP: Off"
-espBtn.MouseButton1Click:Connect(function()
-    espBtn.Text = (espBtn.Text == "ESP: Off") and "ESP: On" or "ESP: Off"
-    -- Future: toggle visual ESP feature
+-- Header bar
+local header = Instance.new("Frame")
+header.Size = UDim2.new(1, 0, 0, 30)
+header.BackgroundColor3 = green
+header.BorderSizePixel = 0
+header.Parent = frame
+
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -60, 1, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.Arcade
+title.Text = "🐣 Randomizer"
+title.TextSize = 18
+title.TextColor3 = Color3.new(1, 1, 1)
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = header
+
+-- Minimize button
+local minimize = Instance.new("TextButton")
+minimize.Size = UDim2.new(0, 25, 0, 25)
+minimize.Position = UDim2.new(1, -30, 0, 2)
+minimize.Text = "-"
+minimize.BackgroundColor3 = red
+minimize.Font = Enum.Font.Arcade
+minimize.TextColor3 = Color3.new(1, 1, 1)
+minimize.TextSize = 18
+minimize.Parent = header
+
+local isMinimized = false
+
+minimize.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    for _, child in ipairs(frame:GetChildren()) do
+        if child ~= header then
+            child.Visible = not isMinimized
+        end
+    end
 end)
 
--- Egg image placeholder
-local eggImg = Instance.new("ImageLabel", screen)
-eggImg.Name, eggImg.Size, eggImg.Position = "EggImage", UDim2.new(0,200,0,200), UDim2.new(0,0,0,60)
-eggImg.BackgroundTransparency = 1
+-- Auto Stop Toggle
+local autoStop = Instance.new("TextButton")
+autoStop.Size = UDim2.new(1, -20, 0, 40)
+autoStop.Position = UDim2.new(0, 10, 0, 35)
+autoStop.BackgroundColor3 = red
+autoStop.Font = Enum.Font.Arcade
+autoStop.TextSize = 18
+autoStop.Text = "[A] Auto Stop: OFF"
+autoStop.TextColor3 = Color3.new(1, 1, 1)
+autoStop.Parent = frame
 
--- Randomizer button
-local randBtn = Instance.new("TextButton", screen)
-randBtn.Name, randBtn.Size, randBtn.Position, randBtn.Text = "RandBtn", UDim2.new(0,150,0,50), UDim2.new(0,0,0,260), "Randomize!"
-randBtn.MouseButton1Click:Connect(function()
-    local eggType = espBtn.Text:match("ESP: On") and "Mythical" or "Common" -- example based on toggle
-    local pets = eggTypes[eggType]
-    local pet = pets[math.random(1,#pets)]
-    eggImg.Image = eggImages[eggType] or ""
-    randBtn.Text = pet
+local autoStopEnabled = false
+
+autoStop.MouseButton1Click:Connect(function()
+    autoStopEnabled = not autoStopEnabled
+    autoStop.Text = "[A] Auto Stop: " .. (autoStopEnabled and "ON" or "OFF")
+end)
+
+-- Reroll Button
+local reroll = Instance.new("TextButton")
+reroll.Size = UDim2.new(1, -20, 0, 40)
+reroll.Position = UDim2.new(0, 10, 0, 80)
+reroll.BackgroundColor3 = blue
+reroll.Font = Enum.Font.Arcade
+reroll.TextSize = 18
+reroll.Text = "[B] Reroll Pet"
+reroll.TextColor3 = Color3.new(1, 1, 1)
+reroll.Parent = frame
+
+reroll.MouseButton1Click:Connect(function()
+    -- Replace this logic with your own pet roll
+    print("🎲 Pet rerolled!")
 end)
