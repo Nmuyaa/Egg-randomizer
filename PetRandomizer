@@ -1,0 +1,49 @@
+local players = game:GetService("Players")
+local player = players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create GUI
+local screenGui = Instance.new("ScreenGui", playerGui)
+screenGui.Name = "PetGui"
+
+local petLabel = Instance.new("TextLabel", screenGui)
+petLabel.Name = "PetLabel"
+petLabel.Size = UDim2.new(0, 300, 0, 50)
+petLabel.Position = UDim2.new(0.5, -150, 0.3, 0)
+petLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+petLabel.Text = "Your pet will appear here"
+petLabel.Font = Enum.Font.SourceSansBold
+petLabel.TextScaled = true
+petLabel.BackgroundTransparency = 1
+petLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+local randomizeButton = Instance.new("TextButton", screenGui)
+randomizeButton.Name = "RandomizeButton"
+randomizeButton.Size = UDim2.new(0, 200, 0, 50)
+randomizeButton.Position = UDim2.new(0.5, -100, 0.4, 0)
+randomizeButton.AnchorPoint = Vector2.new(0.5, 0.5)
+randomizeButton.Text = "Randomize Pet"
+randomizeButton.Font = Enum.Font.SourceSans
+randomizeButton.TextScaled = true
+
+-- Pet list
+local pets = {
+    "Raccoon",
+    "Fennec Fox",
+    "Mimic Octopus",
+    "T-Rex",
+    "Butterfly",
+    "Dragonfly",
+    "Queenbee"
+}
+
+-- Function
+local function getRandomPet()
+    return pets[math.random(1, #pets)]
+end
+
+-- On Click
+randomizeButton.MouseButton1Click:Connect(function()
+    local pet = getRandomPet()
+    petLabel.Text = "🎉 You got: " .. pet
+end)
