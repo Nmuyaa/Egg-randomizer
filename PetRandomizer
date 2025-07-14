@@ -1,49 +1,55 @@
-local players = game:GetService("Players")
-local player = players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local gui = player:WaitForChild("PlayerGui")
 
--- Create GUI
-local screenGui = Instance.new("ScreenGui", playerGui)
-screenGui.Name = "PetGui"
-
-local petLabel = Instance.new("TextLabel", screenGui)
-petLabel.Name = "PetLabel"
-petLabel.Size = UDim2.new(0, 300, 0, 50)
-petLabel.Position = UDim2.new(0.5, -150, 0.3, 0)
-petLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-petLabel.Text = "Your pet will appear here"
-petLabel.Font = Enum.Font.SourceSansBold
-petLabel.TextScaled = true
-petLabel.BackgroundTransparency = 1
-petLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-
-local randomizeButton = Instance.new("TextButton", screenGui)
-randomizeButton.Name = "RandomizeButton"
-randomizeButton.Size = UDim2.new(0, 200, 0, 50)
-randomizeButton.Position = UDim2.new(0.5, -100, 0.4, 0)
-randomizeButton.AnchorPoint = Vector2.new(0.5, 0.5)
-randomizeButton.Text = "Randomize Pet"
-randomizeButton.Font = Enum.Font.SourceSans
-randomizeButton.TextScaled = true
-
--- Pet list
-local pets = {
-    "Raccoon",
-    "Fennec Fox",
-    "Mimic Octopus",
-    "T-Rex",
-    "Butterfly",
-    "Dragonfly",
-    "Queenbee"
+-- 🥚 Define eggs
+local eggTypes = {
+    Common = {"Golden Lab","Dog","Bunny"},
+    Uncommon = {"Black Bunny","Chicken","Cat","Deer"},
+    Rare = {"Orange Tabby","Spotted Deer","Pig","Rooster","Monkey"},
+    Legendary = {"Cow","Silver Monkey","Sea Otter","Turtle","Polar Bear"},
+    Bug = {"Snail","Giant Ant","Caterpillar","Praying Mantis","Dragonfly"},
+    Mythical = {"Grey Mouse","Brown Mouse","Squirrel","Red Giant Ant","Red Fox"},
+    Primal = {"Parasaurolophus","Iguanodon","Pachycephalosaurus","Dilophosaurus","Ankylosaurus","Spinosaurus"},
+    Dinosaur = {"T-Rex","Raptor"} -- example
 }
 
--- Function
-local function getRandomPet()
-    return pets[math.random(1, #pets)]
-end
+-- Map some egg types to images
+local eggImages = {
+    Common = "rbxassetid://12345",
+    Uncommon = "rbxassetid://12346",
+    Bug = "rbxassetid://12347",
+    Mythical = "rbxassetid://12348",
+    Primal = "rbxassetid://12349",
+    Dinosaur = "rbxassetid://12350",
+    Legendary = "rbxassetid://12351",
+    Rare = "rbxassetid://12352"
+}
 
--- On Click
-randomizeButton.MouseButton1Click:Connect(function()
-    local pet = getRandomPet()
-    petLabel.Text = "🎉 You got: " .. pet
+-- Create UI
+local screen = Instance.new("ScreenGui", gui)
+screen.Name = "PetRandomizerGui"
+
+-- ESP toggle
+local espBtn = Instance.new("TextButton", screen)
+espBtn.Name, espBtn.Size, espBtn.Position, espBtn.Text = "EspToggle", UDim2.new(0,100,0,50), UDim2.new(0,0,0,0), "ESP: Off"
+espBtn.MouseButton1Click:Connect(function()
+    espBtn.Text = (espBtn.Text == "ESP: Off") and "ESP: On" or "ESP: Off"
+    -- Future: toggle visual ESP feature
+end)
+
+-- Egg image placeholder
+local eggImg = Instance.new("ImageLabel", screen)
+eggImg.Name, eggImg.Size, eggImg.Position = "EggImage", UDim2.new(0,200,0,200), UDim2.new(0,0,0,60)
+eggImg.BackgroundTransparency = 1
+
+-- Randomizer button
+local randBtn = Instance.new("TextButton", screen)
+randBtn.Name, randBtn.Size, randBtn.Position, randBtn.Text = "RandBtn", UDim2.new(0,150,0,50), UDim2.new(0,0,0,260), "Randomize!"
+randBtn.MouseButton1Click:Connect(function()
+    local eggType = espBtn.Text:match("ESP: On") and "Mythical" or "Common" -- example based on toggle
+    local pets = eggTypes[eggType]
+    local pet = pets[math.random(1,#pets)]
+    eggImg.Image = eggImages[eggType] or ""
+    randBtn.Text = pet
 end)
