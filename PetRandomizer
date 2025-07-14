@@ -1,100 +1,24 @@
--- Stardew-style Grow A Garden-inspired Pet Randomizer GUI
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+-- Full Egg Randomizer GUI + ESP + Pet Spawn + Egg Crack FX
 
--- Theme colors
-local green = Color3.fromRGB(120, 170, 80)
-local red = Color3.fromRGB(210, 60, 60)
-local blue = Color3.fromRGB(100, 150, 255)
-local brown = Color3.fromRGB(120, 80, 40)
+local Players = game:GetService("Players") local ReplicatedStorage = game:GetService("ReplicatedStorage") local Workspace = game:GetService("Workspace") local player = Players.LocalPlayer local playerGui = player:WaitForChild("PlayerGui")
 
--- Create screen GUI
-local gui = Instance.new("ScreenGui")
-gui.Name = "PetRandomizerGUI"
-gui.ResetOnSpawn = false
-gui.Parent = playerGui
+-- Egg part reference local eggPart = Workspace:WaitForChild("Egg")
 
--- Main frame
-local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 120)
-frame.Position = UDim2.new(0, 50, 0, 50)
-frame.BackgroundColor3 = brown
-frame.BorderSizePixel = 0
-frame.Active = true
-frame.Draggable = true
-frame.Parent = gui
+-- Billboard for ESP local billboard = Instance.new("BillboardGui") billboard.Size = UDim2.new(0, 200, 0, 50) billboard.StudsOffset = Vector3.new(0, 3, 0) billboard.Adornee = eggPart billboard.AlwaysOnTop = true billboard.Enabled = false billboard.Name = "EggESP" billboard.Parent = eggPart
 
--- Header bar
-local header = Instance.new("Frame")
-header.Size = UDim2.new(1, 0, 0, 30)
-header.BackgroundColor3 = green
-header.BorderSizePixel = 0
-header.Parent = frame
+local eggLabel = Instance.new("TextLabel") eggLabel.Size = UDim2.new(1, 0, 1, 0) eggLabel.BackgroundTransparency = 1 eggLabel.TextColor3 = Color3.new(1, 1, 1) eggLabel.Font = Enum.Font.Arcade eggLabel.TextScaled = true eggLabel.Text = "" eggLabel.Parent = billboard
 
-local title = Instance.new("TextLabel")
-title.Size = UDim2.new(1, -60, 1, 0)
-title.Position = UDim2.new(0, 10, 0, 0)
-title.BackgroundTransparency = 1
-title.Font = Enum.Font.Arcade
-title.Text = "🐣 Randomizer"
-title.TextSize = 18
-title.TextColor3 = Color3.new(1, 1, 1)
-title.TextXAlignment = Enum.TextXAlignment.Left
-title.Parent = header
+-- GUI setup local gui = Instance.new("ScreenGui", playerGui) local mainFrame = Instance.new("Frame", gui) mainFrame.Size = UDim2.new(0, 300, 0, 120) mainFrame.Position = UDim2.new(0, 60, 0, 60) mainFrame.BackgroundColor3 = Color3.fromRGB(120, 80, 40) mainFrame.Active = true mainFrame.Draggable = true
 
--- Minimize button
-local minimize = Instance.new("TextButton")
-minimize.Size = UDim2.new(0, 25, 0, 25)
-minimize.Position = UDim2.new(1, -30, 0, 2)
-minimize.Text = "-"
-minimize.BackgroundColor3 = red
-minimize.Font = Enum.Font.Arcade
-minimize.TextColor3 = Color3.new(1, 1, 1)
-minimize.TextSize = 18
-minimize.Parent = header
+local header = Instance.new("Frame", mainFrame) header.Size = UDim2.new(1, 0, 0, 30) header.BackgroundColor3 = Color3.fromRGB(120, 170, 80)
 
-local isMinimized = false
+local title = Instance.new("TextLabel", header) title.Size = UDim2.new(1, -40, 1, 0) title.Position = UDim2.new(0, 10, 0, 0) title.Text = "🐣 Randomizer" title.Font = Enum.Font.Arcade title.TextSize = 18 title.BackgroundTransparency = 1 title.TextXAlignment = Enum.TextXAlignment.Left title.TextColor3 = Color3.new(1, 1, 1)
 
-minimize.MouseButton1Click:Connect(function()
-    isMinimized = not isMinimized
-    for _, child in ipairs(frame:GetChildren()) do
-        if child ~= header then
-            child.Visible = not isMinimized
-        end
-    end
-end)
+local minimize = Instance.new("TextButton", header) minimize.Size = UDim2.new(0, 30, 0, 25) minimize.Position = UDim2.new(1, -35, 0, 2) minimize.Text = "-" minimize.BackgroundColor3 = Color3.fromRGB(210, 60, 60) minimize.Font = Enum.Font.Arcade minimize.TextColor3 = Color3.new(1, 1, 1) minimize.TextSize = 18
 
--- Auto Stop Toggle
-local autoStop = Instance.new("TextButton")
-autoStop.Size = UDim2.new(1, -20, 0, 40)
-autoStop.Position = UDim2.new(0, 10, 0, 35)
-autoStop.BackgroundColor3 = red
-autoStop.Font = Enum.Font.Arcade
-autoStop.TextSize = 18
-autoStop.Text = "[A] Auto Stop: OFF"
-autoStop.TextColor3 = Color3.new(1, 1, 1)
-autoStop.Parent = frame
+local miniFrame = Instance.new("TextButton", gui) miniFrame.Size = UDim2.new(0, 150, 0, 30) miniFrame.Position = mainFrame.Position miniFrame.BackgroundColor3 = Color3.fromRGB(120, 170, 80) miniFrame.Text = "EggRandomizer" miniFrame.TextColor3 = Color3.new(1, 1, 1) miniFrame.Font = Enum.Font.Arcade miniFrame.TextSize = 16 miniFrame.Visible = false
 
-local autoStopEnabled = false
+local minimized = false minimize.MouseButton1Click:Connect(function() minimized = not minimized mainFrame.Visible = not minimized miniFrame.Visible = minimized end)
 
-autoStop.MouseButton1Click:Connect(function()
-    autoStopEnabled = not autoStopEnabled
-    autoStop.Text = "[A] Auto Stop: " .. (autoStopEnabled and "ON" or "OFF")
-end)
+miniFrame.MouseButton1Click:Connect(function() minimized = false mainFrame
 
--- Reroll Button
-local reroll = Instance.new("TextButton")
-reroll.Size = UDim2.new(1, -20, 0, 40)
-reroll.Position = UDim2.new(0, 10, 0, 80)
-reroll.BackgroundColor3 = blue
-reroll.Font = Enum.Font.Arcade
-reroll.TextSize = 18
-reroll.Text = "[B] Reroll Pet"
-reroll.TextColor3 = Color3.new(1, 1, 1)
-reroll.Parent = frame
-
-reroll.MouseButton1Click:Connect(function()
-    -- Replace this logic with your own pet roll
-    print("🎲 Pet rerolled!")
-end)
